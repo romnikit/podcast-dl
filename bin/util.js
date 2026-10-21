@@ -61,8 +61,9 @@ export const publishTempFile = ({ tempPath, outputPath, override = false }) => {
     // If the underlying FS does not support links, use older rename logics as a last resort.
     if (error.code === "ENOTSUP") {
       fs.renameSync(tempPath, outputPath);
+    } else {
+      throw error;
     }
-    throw error;
   }
   fs.unlinkSync(tempPath);
 };
