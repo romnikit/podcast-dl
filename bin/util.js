@@ -55,7 +55,15 @@ export const publishTempFile = ({ tempPath, outputPath, override = false }) => {
     return;
   }
 
-  fs.linkSync(tempPath, outputPath);
+  try {
+    fs.linkSync(tempPath, outputPath);
+  } catch (error) {
+    // If the underlying FS does not support links, use older rename logics as a last resort.
+    if (error.code === "ENOTSUP") {
+      fs.renameSync(tempPath, outputPath);
+    }
+    throw error;
+  }
   fs.unlinkSync(tempPath);
 };
 
